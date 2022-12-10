@@ -1,17 +1,37 @@
 package com.javatech.springboot.exception;
 
+import java.util.Date;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class EmployeeGlobalException extends RuntimeException{
+@ControllerAdvice
+public class EmployeeGlobalException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public EmployeeGlobalException(String message) {
-		super(message);
+	//handle specific exception 
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException exception,WebRequest request){
+		
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails,HttpStatus.NOT_FOUND);		
+	}
+	
+	//handle global exception
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handleGlobalException(Exception exception,WebRequest request){
+		
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails,HttpStatus.INTERNAL_SERVER_ERROR);		
+	}
+	
+	//handle API exception
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handleAPIException(APIException exception,WebRequest request){
+		
+		ErrorDetails errorDetails = new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails,HttpStatus.NOT_FOUND);		
 	}
 }

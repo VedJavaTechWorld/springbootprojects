@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.javatech.springboot.exception.APIException;
 import com.javatech.springboot.exception.EmployeeGlobalException;
+import com.javatech.springboot.exception.ResourceNotFoundException;
 import com.javatech.springboot.model.Employee;
 import com.javatech.springboot.repository.EmployeeRepository;
 
@@ -61,7 +63,7 @@ public class EmployeeController {
 	@PutMapping("{id}")
 	public ResponseEntity<Employee> updateEmployee(@PathVariable long id,@RequestBody Employee employee){
 		Employee updateEmployee = employeeRepository.findById(id)
-				.orElseThrow(() -> new EmployeeGlobalException("Employee Id Doesn't exists with id :"+ id));
+				.orElseThrow(() -> new ResourceNotFoundException("Employee Id Doesn't exists with id :"+ id));
 		
 		updateEmployee.setFirstName(employee.getFirstName());
 		updateEmployee.setLastName(employee.getLastName());
@@ -73,7 +75,7 @@ public class EmployeeController {
 	@DeleteMapping("{id}")
 	public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable long id){
 		Employee employee = employeeRepository.findById(id)
-				.orElseThrow(() -> new EmployeeGlobalException("Employee Id doesn't exists with id : "+ id));
+				.orElseThrow(() -> new APIException("Employee Id doesn't exists with id : "+ id));
 		employeeRepository.delete(employee);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
 	}
